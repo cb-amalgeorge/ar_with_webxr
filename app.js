@@ -5,6 +5,15 @@ import {RGBELoader} from 'https://threejsfundamentals.org/threejs/resources/thre
 class App {
     url = 'https://ar-with-webxr.s3.us-east-2.amazonaws.com/'
 
+    getParameterByName(name, url = window.location.href) {
+        name = name.replace(/[\[\]]/g, '\\$&');
+        var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+            results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, ' '));
+    }
+
     constructor() {
         const container = document.createElement('div');
         document.body.appendChild(container);
@@ -114,10 +123,17 @@ class App {
 
         this.loadingBar.visible = true;
 
+        let model;
+        if (this.getParameterByName('model')) {
+            model = this.getParameterByName('model');
+        } else {
+            model = asset;
+        }
+
         // Load a glTF resource
         loader.load(
             // resource URL
-            `${asset}.glb`,
+            `${this.model}.glb`,
             // called when the resource is loaded
             function (gltf) {
 
